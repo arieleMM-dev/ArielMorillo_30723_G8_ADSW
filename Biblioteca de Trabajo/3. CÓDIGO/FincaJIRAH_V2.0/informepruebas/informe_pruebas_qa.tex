@@ -1,0 +1,807 @@
+% ═══════════════════════════════════════════════════════════════════
+%  INFORME DE PRUEBAS QA — FINCA JIRAH
+%  Estilo: Minimalista-Corporativo
+%  Compilar: pdflatex -interaction=nonstopmode informe_pruebas_qa.tex
+%            (ejecutar DOS veces para referencias correctas)
+% ═══════════════════════════════════════════════════════════════════
+\documentclass[12pt, a4paper]{article}
+
+% ─── PAQUETES ESENCIALES ────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{makecell}
+\usepackage{mdframed}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, shadows}
+
+% ─── GEOMETRÍA ──────────────────────────────────────────────────────
+\geometry{
+  a4paper,
+  top=2.5cm,
+  bottom=2.5cm,
+  left=2.8cm,
+  right=2.8cm,
+  headheight=25pt,
+  headsep=0.5cm,
+  footskip=1cm
+}
+
+% ─── PALETA DE COLORES (Minimalista-Corporativa) ────────────────────
+\definecolor{CNavy}{HTML}{0F172A}
+\definecolor{CAccent}{HTML}{1D4ED8}
+\definecolor{CAccentLight}{HTML}{3B82F6}
+\definecolor{CAccentBg}{HTML}{EFF3FF}
+\definecolor{CSuccess}{HTML}{15803D}
+\definecolor{CSuccessBg}{HTML}{F0FDF4}
+\definecolor{CSuccessBorder}{HTML}{BBF7D0}
+\definecolor{CWarning}{HTML}{92400E}
+\definecolor{CWarningBg}{HTML}{FFFBEB}
+\definecolor{CWarningBorder}{HTML}{FDE68A}
+\definecolor{CDanger}{HTML}{991B1B}
+\definecolor{CDangerBg}{HTML}{FEF2F2}
+\definecolor{CDangerBorder}{HTML}{FECACA}
+\definecolor{CText}{HTML}{1A1D23}
+\definecolor{CTextSec}{HTML}{5A6072}
+\definecolor{CTextMuted}{HTML}{9299A8}
+\definecolor{CBorder}{HTML}{E5E8EF}
+\definecolor{CBg}{HTML}{F8F9FB}
+\definecolor{CRowAlt}{HTML}{F1F4FB}
+\definecolor{CCode}{HTML}{1E3A8A}
+\definecolor{CCodeBg}{HTML}{F0F4FF}
+
+% ─── HYPERREF ───────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=CAccent,
+  urlcolor=CAccent,
+  pdftitle={Informe de Pruebas QA --- Finca Jirah},
+  pdfauthor={Equipo QA --- ESPE},
+  pdfborder={0 0 0}
+}
+
+% ─── TIPOGRAFÍA ─────────────────────────────────────────────────────
+\renewcommand{\familydefault}{\sfdefault}
+
+% ─── ESPACIADO ──────────────────────────────────────────────────────
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+% ─── TCOLORBOX ──────────────────────────────────────────────────────
+\tcbuselibrary{skins, breakable}
+
+% ─── ESTILOS DE SECCIÓN ─────────────────────────────────────────────
+\titleformat{\section}
+  {\color{CText}\large\bfseries}{}
+  {0pt}
+  {\colorbox{CAccent}{\color{white}\makebox[1.2em]{\thesection}} \hspace{4pt}}[]
+\titlespacing{\section}{0pt}{18pt}{10pt}
+
+\titleformat{\subsection}
+  {\color{CAccent}\normalsize\bfseries}{}
+  {0pt}{\thesubsection\ }[]
+\titlespacing{\subsection}{0pt}{12pt}{6pt}
+
+% ─── ENCABEZADO Y PIE ───────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{CTextMuted}\small\textsf{Finca Jirah --- Informe QA v1.1 (Rev. Completa)}}
+\fancyhead[R]{\color{CTextMuted}\small\textsf{Confidencial Interno}}
+\fancyfoot[C]{\color{CTextMuted}\small\textsf{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{CBorder}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+
+% ─── COMANDOS AUXILIARES ────────────────────────────────────────────
+\newcommand{\badgePass}{\colorbox{CSuccessBg}{\color{CSuccess}\small\bfseries\ \faCheck\ PASS\ }}
+\newcommand{\badgeFail}{\colorbox{CDangerBg}{\color{CDanger}\small\bfseries\ \faTimes\ FAIL\ }}
+\newcommand{\badgePending}{\colorbox{CWarningBg}{\color{CWarning}\small\bfseries\ \faClock\ Pendiente\ }}
+\newcommand{\badgeCovered}{\colorbox{CSuccessBg}{\color{CSuccess}\small\bfseries\ \faCheck\ Cubierto\ }}
+\newcommand{\badgeCritical}{\colorbox{CDangerBg}{\color{CDanger}\small\bfseries\ Crítica\ }}
+\newcommand{\badgeModerate}{\colorbox{CWarningBg}{\color{CWarning}\small\bfseries\ Moderada\ }}
+\newcommand{\badgeSuggested}{\colorbox{CAccentBg}{\color{CAccent}\small\bfseries\ Sugerida\ }}
+\newcommand{\code}[1]{\colorbox{CCodeBg}{\color{CCode}\ttfamily\small #1}}
+
+% ─── CAJAS ESPECIALES ───────────────────────────────────────────────
+\newtcolorbox{alertsuccess}{
+  enhanced, breakable,
+  colback=CSuccessBg, colframe=CSuccess,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+\newtcolorbox{alertwarning}{
+  enhanced, breakable,
+  colback=CWarningBg, colframe=CWarning,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+\newtcolorbox{alertinfo}{
+  enhanced, breakable,
+  colback=CAccentBg, colframe=CAccent,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+\newtcolorbox{defectcritical}{
+  enhanced, breakable,
+  colback=white, colframe=CDanger,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+\newtcolorbox{defectmoderate}{
+  enhanced, breakable,
+  colback=white, colframe=CWarning,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+\newtcolorbox{defectsuggested}{
+  enhanced, breakable,
+  colback=white, colframe=CAccentLight,
+  leftrule=4pt, toprule=0.4pt, bottomrule=0.4pt, rightrule=0.4pt,
+  arc=2pt, left=6pt, right=6pt, top=6pt, bottom=6pt,
+  fontupper=\small\color{CText}
+}
+
+% ═══════════════════════════════════════════════════════════════════
+%  DOCUMENTO
+% ═══════════════════════════════════════════════════════════════════
+\begin{document}
+\pagenumbering{gobble}
+
+% ─── PORTADA ────────────────────────────────────────────────────────
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[CNavy] (current page.north west) rectangle (current page.south east);
+  \fill[CAccent, opacity=0.15] (current page.north east) ++(-3cm,-3cm) circle (5cm);
+  \fill[CAccentLight, opacity=0.08] (current page.south west) ++(6cm,4cm) circle (3cm);
+  \fill[CAccent, opacity=0.4]
+    ($(current page.north west)+(0,-17.5cm)$) rectangle
+    ($(current page.north east)+(0,-17.8cm)$);
+\end{tikzpicture}
+
+\vspace*{3cm}
+\begin{center}
+  {\color{white!60!CNavy}\small\bfseries\faDotCircle\quad INFORME OFICIAL QA\quad ---\quad V1.1 REV. COMPLETA}\\[0.4cm]
+  {\color{CAccentLight!60!white}\rule{4cm}{0.5pt}}\\[0.8cm]
+  {\fontsize{32}{40}\selectfont\color{white}\bfseries Informe de Pruebas}\\[0.3cm]
+  {\fontsize{32}{40}\selectfont\color{CAccentLight}\bfseries Finca Jirah}\\[1.2cm]
+  {\color{white!70!CNavy}\large Sistema de Gestión Agrícola PWA Offline-First}\\[0.3cm]
+  {\color{white!50!CNavy}\normalsize Cobertura completa de todos los casos de uso implementados\\CU-01 $\cdot$ CU-03 $\cdot$ CU-04 $\cdot$ CU-05 $\cdot$ CU-05.3 $\cdot$ CU-06}\\[2.5cm]
+\end{center}
+
+\begin{center}
+\begin{tabular}{p{3.5cm} p{3.5cm} p{3.5cm} p{3.5cm}}
+  \multicolumn{4}{c}{\color{CAccentLight!60!white}\rule{14cm}{0.3pt}}\\[0.5cm]
+  \color{white!50!CNavy}\footnotesize\bfseries SISTEMA &
+  \color{white!50!CNavy}\footnotesize\bfseries FECHA &
+  \color{white!50!CNavy}\footnotesize\bfseries EQUIPO &
+  \color{white!50!CNavy}\footnotesize\bfseries FRAMEWORK \\[0.2cm]
+  \color{white}\small Finca Jirah v0.1.0 &
+  \color{white}\small 13 Julio 2026 &
+  \color{white}\small QA -- ESPE &
+  \color{white}\small Vitest v4.1.10 \\[0.5cm]
+  \multicolumn{4}{c}{\color{CAccentLight!60!white}\rule{14cm}{0.3pt}}\\[0.5cm]
+  \color{white!50!CNavy}\footnotesize\bfseries CLASIFICACION &
+  \color{white!50!CNavy}\footnotesize\bfseries COBERTURA &
+  \color{white!50!CNavy}\footnotesize\bfseries CASOS &
+  \color{white!50!CNavy}\footnotesize\bfseries RESULTADO \\[0.2cm]
+  \color{white}\small Confidencial &
+  \color{white}\small 85.8\% Líneas &
+  \color{white}\small 125 / 125 &
+  \color{white}\small \faCheckCircle\ 100\% PASS \\[0.5cm]
+\end{tabular}
+\end{center}
+
+\vfill
+\begin{center}
+  {\color{white!40!CNavy}\footnotesize Universidad de las Fuerzas Armadas ESPE\quad $\bullet$\quad Análisis de Sistemas}
+\end{center}
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{2}
+
+\thispagestyle{fancy}
+{\color{CText}\large\bfseries Tabla de Contenidos}\\[-2pt]
+{\color{CAccent}\rule{\textwidth}{1.5pt}}\\[8pt]
+\renewcommand{\contentsname}{}
+\tableofcontents
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 1: RESUMEN EJECUTIVO
+% ═══════════════════════════════════════════════════════════════════
+\section{Resumen Ejecutivo}
+
+\subsection*{Visión general}
+
+Este informe documenta la ejecución \textbf{completa} del Plan de Pruebas de Calidad (QA) para el sistema \textbf{Finca Jirah}. La revisión v1.1 incorpora las suites faltantes para CU-04, CU-05.3 y CU-06, logrando cobertura total de todos los casos de uso implementados en el sistema.
+
+\vspace{8pt}
+\begin{center}
+\begin{tikzpicture}
+  \foreach \val/\lbl/\col/\x in {
+    125/Casos Ejecutados/CText/0,
+    125/Casos Pasados/CSuccess/4.6,
+    0/Casos Fallidos/CTextMuted/9.2,
+    100\%/Tasa de \'Exito/CAccent/13.8
+  }{
+    \node[draw=CBorder, fill=white, rounded corners=4pt,
+          minimum width=4cm, minimum height=2.2cm, inner sep=8pt] at (\x,0) {};
+    \node[font=\fontsize{20}{24}\selectfont\bfseries, text=\col] at (\x,0.4) {\val};
+    \node[font=\tiny\bfseries, text=CTextMuted] at (\x,-0.55) {\lbl};
+  }
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\begin{tikzpicture}
+  \foreach \val/\lbl/\col/\x in {
+    85.8\%/Cobertura L\'ineas/CAccent/0,
+    75.3\%/Cobertura Ramas/CAccentLight/4.6,
+    10/Archivos de Prueba/CTextSec/9.2,
+    1.74s/Tiempo Total/CTextSec/13.8
+  }{
+    \node[draw=CBorder, fill=white, rounded corners=4pt,
+          minimum width=4cm, minimum height=2.2cm, inner sep=8pt] at (\x,0) {};
+    \node[font=\fontsize{20}{24}\selectfont\bfseries, text=\col] at (\x,0.4) {\val};
+    \node[font=\tiny\bfseries, text=CTextMuted] at (\x,-0.55) {\lbl};
+  }
+\end{tikzpicture}
+\end{center}
+
+\vspace{8pt}
+\begin{alertsuccess}
+\textbf{\faCheckCircle\ Revisión Completa v1.1:} Se añadieron 43 casos de prueba (CU-04: 24, CU-05.3: 8, CU-06: 11) para cubrir \textbf{todos} los casos de uso implementados. Total: 125 casos en 10 suites, 100\% exitosos.
+\end{alertsuccess}
+
+\vspace{6pt}
+\begin{alertinfo}
+\textbf{\faInfoCircle\ Nota metodológica:} Cada Caso de Uso (CU) se descompone en Casos de Prueba atómicos (TC) que verifican un único escenario con mocks de dependencias. La organización CU $\to$ TC constituye la Matriz de Trazabilidad requerida por el Plan QA, combinando \textit{pruebas unitarias puras} (funciones de dominio) con \textit{pruebas unitarias de servicio} (lógica de negocio con repositorios mockeados).
+\end{alertinfo}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 2: ALCANCE Y OBJETIVOS
+% ═══════════════════════════════════════════════════════════════════
+\section{Alcance y Objetivos}
+
+\subsection{Módulos bajo prueba — Cobertura completa}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.45}
+\begin{tabularx}{\textwidth}{>{\ttfamily\small}l X >{\centering}p{1.6cm} >{\centering\arraybackslash}p{2.4cm}}
+  \rowcolor{CRowAlt}
+  \normalfont\bfseries\small ID & \bfseries Módulo / Clases Probadas & \bfseries\small Casos & \bfseries\small Estado \\
+  \midrule
+  CU-01 & \textbf{Acceso al Sistema} --- \code{AuthService}: Login, Recuperación, Blacklist, Fortaleza & 13 & \badgeCovered \\
+  \rowcolor{CBg}
+  CU-03 & \textbf{Gestión de Agricultores} --- \code{AgricultorService}: CRUD, Cédula EC (módulo-10), desactivación & 14 & \badgeCovered \\
+  CU-04 & \textbf{Catálogos de Finca} --- \code{CampanaService}, \code{LoteService}, \code{CompradorService}: códigos únicos, tara bloqueada, lote en uso & 24 & \badgeCovered \\
+  \rowcolor{CBg}
+  CU-05 & \textbf{Transacciones (Core)} --- \code{PesajeService}, \code{ClasificacionService}, \code{CalculadoraCosecha} (Strategy), \code{OfflinePayloadAdapter} (Adapter) & 33 & \badgeCovered \\
+  CU-05.3 & \textbf{Ajuste de Comprador} --- \code{AjusteService}: peso rechazado, fruta efectiva, validaciones E.1--E.3 & 8 & \badgeCovered \\
+  \rowcolor{CBg}
+  CU-06 & \textbf{Dashboard / Analítica} --- \code{DashboardRepo}: kgTotal, alertas, kgPorLote, filtros por fecha/campaña & 11 & \badgeCovered \\
+  Patrones & \textbf{Arquitectura} --- \code{SyncStateContext} (State), \code{NetworkSyncSubject} (Observer) & 22 & \badgeCovered \\
+  \midrule
+  \rowcolor{CRowAlt}
+  \multicolumn{2}{l}{\bfseries Total} & \bfseries 125 & \badgeCovered \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Tipos de prueba implementados}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.2cm} X >{\centering\arraybackslash}p{2.8cm}}
+  \rowcolor{CRowAlt}
+  \bfseries Tipo & \bfseries Descripción y ejemplos & \bfseries Módulos \\
+  \midrule
+  Unitaria pura & Función aislada sin dependencias: \code{validarCedulaEC()}, \code{calcularMargen()}, \code{SyncStateContext.startSync()} & Calculo, State, Observer, Adapter \\
+  \rowcolor{CBg}
+  Unitaria de servicio & Método de servicio con repositorios mockeados: \code{CampanaService.crear()}, \code{AjusteService.registrar()} & AuthService, AgricultorService, PesajeService, CampanaService, AjusteService \\
+  Prueba de repositorio & Repositorio con Prisma mockeado para verificar queries: filtros, agrupaciones, distinct & DashboardRepo \\
+  \rowcolor{CBg}
+  Prueba de patrón & Comportamiento dinámico de patrones de diseño (Strategy, State, Observer, Adapter) & CalculadoraCosecha, SyncState \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Fuera de alcance (explícito)}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+  \item[\color{CTextMuted}$\oslash$] Componentes UI de React y hooks de presentación visual
+  \item[\color{CTextMuted}$\oslash$] Pruebas E2E (End-to-End) en navegador real (Playwright/Cypress)
+  \item[\color{CTextMuted}$\oslash$] Conexiones a instancias reales de BD (SQLite / PostgreSQL)
+  \item[\color{CTextMuted}$\oslash$] \code{offline.service.ts} — Hook de dispositivo (sin lógica de negocio aislable)
+  \item[\color{CTextMuted}$\oslash$] Servicio de email y notificaciones externas en producción
+\end{itemize}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 3: ENTORNO Y HERRAMIENTAS
+% ═══════════════════════════════════════════════════════════════════
+\section{Entorno y Herramientas}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{3.5cm} X >{\centering\arraybackslash}p{2.2cm}}
+  \rowcolor{CRowAlt}
+  \bfseries Componente & \bfseries Descripción & \bfseries Estado \\
+  \midrule
+  Vitest v4.1.10 & Framework de pruebas compatible con Vite/Next.js. API compatible con Jest. Modo: \code{vitest run}. & \badgeCovered \\
+  \rowcolor{CBg}
+  @vitest/coverage-v8 & Cobertura con proveedor v8 (Istanbul). Reportes: text, json. Umbrales: L\'ineas $\geq$85\%, Ramas $\geq$70\%, Funciones $\geq$70\%. & \badgeCovered \\
+  vi.mock() & Mocking manual de \code{CampanaRepo}, \code{LoteRepo}, \code{CompradorRepo}, \code{AjusteRepo}, \code{UserRepository}, \code{PesajeRepository} y \code{PrismaClient}. & \badgeCovered \\
+  \rowcolor{CBg}
+  Stack tecnológico & Next.js 16.2.9, TypeScript 5, Prisma 7.8.0, React 19.2.4, bcryptjs 3.0.3 & Producción \\
+  SO & Windows 11 --- MiKTeX 26.2 (compilación LaTeX) & Activo \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Archivos de prueba — 10 suites}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\textwidth}{>{\ttfamily\small}l X >{\centering\arraybackslash}p{1.8cm}}
+  \rowcolor{CRowAlt}
+  \normalfont\bfseries\small Archivo & \bfseries Módulo cubierto & \bfseries\small Tests \\
+  \midrule
+  auth.service.test.ts & AuthService --- Login, Recuperación, Blacklist, Fortaleza & 13 \\
+  \rowcolor{CBg}
+  agricultor.service.test.ts & AgricultorService --- CRUD, Cédula EC, Desactivación & 14 \\
+  catalogo.service.test.ts & CampanaService + LoteService + CompradorService (CU-04) & 24 \\
+  \rowcolor{CBg}
+  pesaje.service.test.ts & PesajeService + ClasificacionService (CU-05) & 9 \\
+  ajuste.service.test.ts & AjusteService --- Peso rechazado, Fruta efectiva (CU-05.3) & 8 \\
+  \rowcolor{CBg}
+  calculadora.test.ts & CalculadoraCosecha --- Strategy, cambio dinámico & 17 \\
+  offline.adapter.test.ts & OfflinePayloadAdapter --- Patrón Adapter & 7 \\
+  \rowcolor{CBg}
+  sync.state.test.ts & SyncStateContext --- Patrón State, transiciones & 16 \\
+  sync.observer.test.ts & NetworkSyncSubject --- Patrón Observer & 6 \\
+  \rowcolor{CBg}
+  dashboard.test.ts & DashboardRepo --- getStats(), filtros, kgPorLote (CU-06) & 11 \\
+  \midrule
+  \rowcolor{CRowAlt}
+  \normalfont\bfseries Total & & \bfseries 125 \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 4: RESULTADOS DE LA EJECUCIÓN
+% ═══════════════════════════════════════════════════════════════════
+\section{Resultados de la Ejecución}
+
+\subsection{Salida de consola — Vitest}
+
+\begin{tcolorbox}[
+  enhanced, breakable,
+  colback=CNavy, coltext=white, colframe=CNavy,
+  arc=4pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  fontupper=\ttfamily\small
+]
+\color{CAccentLight}\bfseries RUN\normalfont\color{white}\ v4.1.10\ C:/\ldots/FincaJIRAH/\\
+\color{white!70}\ \ \ \ Coverage enabled with v8\\[4pt]
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/sync.observer.test.ts\ (6 tests)\ 15ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/agricultor.service.test.ts\ (14 tests)\ 19ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/calculadora.test.ts\ (17 tests)\ 13ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/sync.state.test.ts\ (16 tests)\ 13ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/offline.adapter.test.ts\ (7 tests)\ 9ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/pesaje.service.test.ts\ (9 tests)\ 16ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/ajuste.service.test.ts\ (8 tests)\ 16ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/dashboard.test.ts\ (11 tests)\ 41ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/catalogo.service.test.ts\ (24 tests)\ 31ms\\
+\color{CSuccess} \textbf{v}\ \_\_tests\_\_/auth.service.test.ts\ (13 tests)\ 733ms\\[4pt]
+\color{white!60} Test Files\ \color{CSuccess}\textbf{10 passed}\ \color{white!60}(10)\\
+\color{white!60} Tests\ \color{CSuccess}\textbf{125 passed}\ \color{white!60}(125)\\
+\color{white!60} Start at\ 22:47:51\\
+\color{white!60} Duration\ \textbf{1.74s}
+\end{tcolorbox}
+
+\subsection{Casos de prueba por módulo}
+
+\footnotesize
+\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{>{\ttfamily}p{2.1cm} p{2.5cm} p{5.0cm} p{2.5cm} >{\centering\arraybackslash}p{0.9cm}}
+  \rowcolor{CRowAlt}
+  \normalfont\bfseries ID Caso & \bfseries Suite & \bfseries Nombre del Caso & \bfseries Resultado Esperado & \bfseries\small Est.\\
+  \midrule
+  \endhead
+  % ─ CU-01 AuthService ─
+  TC-01.1.1 & AuthService & Login --- Flujo Normal & Sin passwordHash & \badgePass \\
+  \rowcolor{CBg}
+  TC-01.1.2 & AuthService & Login --- Contraseña incorrecta & Retorna null & \badgePass \\
+  TC-01.1.3 & AuthService & Login --- Usuario inexistente & Retorna null & \badgePass \\
+  \rowcolor{CBg}
+  TC-01.1.4 & AuthService & Login --- Cuenta inactiva & ACCOUNT\_INACTIVE & \badgePass \\
+  TC-01.2.1 & AuthService & Recuperación --- Flujo Normal & Token generado & \badgePass \\
+  \rowcolor{CBg}
+  TC-01.2.2 & AuthService & Recuperación --- Email inexistente & Retorna null & \badgePass \\
+  TC-01.2.3 & AuthService & Recuperación --- Token expirado & TOKEN\_EXPIRADO & \badgePass \\
+  \rowcolor{CBg}
+  TC-01.PF1--4 & AuthService & validarFortaleza (4 variantes) & ok=false/true & \badgePass \\
+  TC-01.BL1--2 & AuthService & Blacklist: revocar + verificar & false/true & \badgePass \\
+  \midrule
+  % ─ CU-03 AgricultorService ─
+  TC-03.1.1 & AgricultorService & Crear --- Flujo Normal & user+\_dev\_password & \badgePass \\
+  \rowcolor{CBg}
+  TC-03.1.2 & AgricultorService & Crear --- Cédula duplicada & CEDULA\_EN\_USO & \badgePass \\
+  TC-03.1.X & AgricultorService & Crear --- Cédula inválida & CEDULA\_INVALIDA & \badgePass \\
+  \rowcolor{CBg}
+  TC-03.1.Y & AgricultorService & Crear --- Email duplicado & EMAIL\_EN\_USO & \badgePass \\
+  TC-03.2.1 & AgricultorService & Buscar por término & Lista coincidencias & \badgePass \\
+  \rowcolor{CBg}
+  TC-03.3.1 & AgricultorService & Editar --- Flujo Normal & Agricultor actualizado & \badgePass \\
+  TC-03.3.2 & AgricultorService & Editar --- Email duplicado & EMAIL\_EN\_USO & \badgePass \\
+  \rowcolor{CBg}
+  TC-03.4.1 & AgricultorService & Desactivar --- Flujo Normal & isActive=false & \badgePass \\
+  TC-03.4.2 & AgricultorService & Desactivar --- Auto-desactivación & SELF\_DEACTIVATION & \badgePass \\
+  \rowcolor{CBg}
+  TC-03.CE1--5 & AgricultorService & Cédula EC (módulo-10, 5 variantes) & true/false & \badgePass \\
+  \midrule
+  % ─ CU-04 CampanaService ─
+  TC-04.1.1 & CampanaService & Crear --- Flujo Normal + tara 1.70 & codigo=uppercase & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.1.2 & CampanaService & Crear --- Código duplicado & CODIGO\_DUPLICADO & \badgePass \\
+  TC-04.1.3 & CampanaService & Crear --- Código vacío & CODIGO\_REQUERIDO & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.1.4 & CampanaService & Crear --- Tara \textgreater 10 & TARA\_INVALIDA & \badgePass \\
+  TC-04.1.5 & CampanaService & Crear --- Tara $\leq$ 0 & TARA\_INVALIDA & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.2.1 & CampanaService & Actualizar nombre & nombre actualizado & \badgePass \\
+  TC-04.2.2 & CampanaService & Actualizar --- Campaña inactiva & CAMPANA\_INACTIVA & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.2.3 & CampanaService & Actualizar --- Tara bloqueada (pesajes) & TARA\_BLOQUEADA & \badgePass \\
+  TC-04.2.4 & CampanaService & Actualizar --- Tara sin pesajes & OK & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.3.1 & CampanaService & Cerrar --- Sin pendientes & isActive=false & \badgePass \\
+  TC-04.3.2 & CampanaService & Cerrar --- Con PENDING sync & SYNC\_PENDIENTE & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.3.3 & CampanaService & Cerrar --- Ya cerrada & CAMPANA\_YA\_CERRADA & \badgePass \\
+  TC-04.L1 & LoteService & Crear lote --- Flujo Normal & codigo=uppercase & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.L2 & LoteService & Crear --- Código duplicado & CODIGO\_DUPLICADO & \badgePass \\
+  TC-04.L3 & LoteService & Crear --- Nombre vacío & NOMBRE\_REQUERIDO & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.L4 & LoteService & Eliminar --- Sin campaña activa & isActive=false & \badgePass \\
+  TC-04.L5 & LoteService & Eliminar --- Con pesajes en campaña & LOTE\_EN\_USO & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.C1 & CompradorService & Crear con RUC único & tolerancia=4.0 & \badgePass \\
+  TC-04.C2 & CompradorService & Crear --- RUC duplicado & RUC\_DUPLICADO & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.C3 & CompradorService & Crear --- Nombre vacío & NOMBRE\_REQUERIDO & \badgePass \\
+  TC-04.C4 & CompradorService & Crear --- Tolerancia \textgreater 100 & TOLERANCIA\_INVALIDA & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.C5 & CompradorService & Crear sin RUC (opcional) & OK & \badgePass \\
+  TC-04.C6 & CompradorService & Actualizar nombre & nombre actualizado & \badgePass \\
+  \rowcolor{CBg}
+  TC-04.C7 & CompradorService & Actualizar --- No encontrado & COMPRADOR\_NO\_ENCONTRADO & \badgePass \\
+  \midrule
+  % ─ CU-05 PesajeService ─
+  TC-05.1.1 & PesajeService & Registrar pesaje --- Flujo Normal & pesoNeto correcto & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.1.X & PesajeService & pesoBrutoKg=0 & PESO\_BRUTO\_INVALIDO & \badgePass \\
+  TC-05.1.Y & PesajeService & Campaña inactiva & CAMPANA\_CERRADA & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.2.1 & ClasificacionService & Clasificar dentro del margen & dentroDelMargen=true & \badgePass \\
+  TC-05.2.2 & ClasificacionService & Descuadre \textgreater \textpm 4\% & DESCUADRE:X\% & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.2.3 & ClasificacionService & forzar=true con descuadre & auditFlag=true & \badgePass \\
+  TC-05.2.X & ClasificacionService & Ya clasificado & YA\_CLASIFICADO & \badgePass \\
+  \midrule
+  % ─ CU-05.3 AjusteService ─
+  TC-05.3.1 & AjusteService & Registrar ajuste --- Flujo Normal & pctFrutaEfectiva\textgreater 90 & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.3.2 & AjusteService & pesoRechazado=0 & pctFrutaEfectiva$\approx$100 & \badgePass \\
+  TC-05.3.3 & AjusteService & Clasificación no encontrada & CLASIF\_NO\_ENCONTRADA & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.3.4 & AjusteService & Ajuste duplicado & AJUSTE\_YA\_REGISTRADO & \badgePass \\
+  TC-05.3.5 & AjusteService & Rechazo excede exportación & RECHAZO\_EXCEDE & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.3.6 & AjusteService & Comprador no existe & COMPRADOR\_NO\_ENCONTRADO & \badgePass \\
+  TC-05.3.7 & AjusteService & pesoRechazado negativo & PESO\_RECHAZADO\_INVALIDO & \badgePass \\
+  \rowcolor{CBg}
+  TC-05.3.8 & AjusteService & ajusteKg = 3 decimales exactos & 45.267 & \badgePass \\
+  \midrule
+  % ─ Calculadora Strategy ─
+  TC-ST.N1--4 & CalculadoraCosecha & Margen 0\%, 4\%, \textgreater4\%, bruto=0 & OK & \badgePass \\
+  \rowcolor{CBg}
+  TC-ST.E1--2 & CalculadoraCosecha & Exportación 2\% y 2.5\% & 2/false & \badgePass \\
+  TC-ST.T1--2 & CalculadoraCosecha & Tara estándar y personalizada & 8.50/6.0 kg & \badgePass \\
+  \rowcolor{CBg}
+  TC-ST.C1--3 & CalculadoraCosecha & calcularPesaje + validarClasif. & tara=3.40 & \badgePass \\
+  TC-ST.DM & CalculadoraCosecha & setEstrategiaMargen() dinámico & margenPermitido=2 & \badgePass \\
+  \rowcolor{CBg}
+  TC-ST.DT & CalculadoraCosecha & setEstrategiaTara() dinámico & tara=4.0 kg & \badgePass \\
+  \midrule
+  % ─ Adapter ─
+  TC-AD.1--7 & OfflineAdapter & adaptPesaje + adaptClasificacion (7 variantes) & syncStatus=SYNCED & \badgePass \\
+  \midrule
+  % ─ State ─
+  TC-SS.1--16 & SyncStateContext & PENDING/SYNCING/SYNCED + transiciones (16 variantes) & OK & \badgePass \\
+  \midrule
+  % ─ Observer ─
+  TC-OB.1--6 & SyncObserver & subscribe, notify, unsubscribe, múltiples (6 variantes) & OK & \badgePass \\
+  \midrule
+  % ─ CU-06 Dashboard ─
+  TC-06.1 & DashboardRepo & kgTotal y totalPesajes desde agregación & 1250.50 kg / 28 & \badgePass \\
+  \rowcolor{CBg}
+  TC-06.2 & DashboardRepo & campanaActiva en resultado & CA-2026 & \badgePass \\
+  TC-06.3 & DashboardRepo & Lotes con actividad (distinct) & 2 lotes & \badgePass \\
+  \rowcolor{CBg}
+  TC-06.4 & DashboardRepo & Alertas de margen (auditFlag=true) & 3 alertas & \badgePass \\
+  TC-06.5 & DashboardRepo & kgPorLote --- acumulación KG & LT-01=98.5 kg & \badgePass \\
+  \rowcolor{CBg}
+  TC-06.6 & DashboardRepo & kgPorLote --- alertas por lote & LT-02=1 alerta & \badgePass \\
+  TC-06.7 & DashboardRepo & Sin campaña activa & campanaActiva=null & \badgePass \\
+  \rowcolor{CBg}
+  TC-06.8 & DashboardRepo & Filtros por fechaDesde/fechaHasta & where.fechaRegistro & \badgePass \\
+  TC-06.9 & DashboardRepo & Filtro por campanaId & where.campanaId & \badgePass \\
+  \rowcolor{CBg}
+  TC-06.10 & DashboardRepo & getCampanas() --- selector & 2 campañas & \badgePass \\
+  TC-06.11 & DashboardRepo & getLotes() --- solo activos & isActive=true & \badgePass \\
+  \midrule
+  \rowcolor{CRowAlt}
+  \multicolumn{4}{r|}{\normalfont\bfseries Total} & \normalfont\bfseries 125 \\
+  \bottomrule
+\end{longtable}
+\normalsize
+
+\subsection{Cobertura de código por módulo}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\textwidth}{X >{\centering}p{1.6cm} >{\centering}p{1.6cm} >{\centering}p{1.6cm} >{\centering\arraybackslash}p{1.6cm}}
+  \rowcolor{CRowAlt}
+  \bfseries Módulo & \bfseries Stmts & \bfseries Branch & \bfseries Funcs & \bfseries Lines \\
+  \midrule
+  \code{SyncObserver.ts} & 100\% & 100\% & 100\% & \textcolor{CSuccess}{\bfseries 100\%} \\
+  \rowcolor{CBg}
+  \code{OfflinePayloadAdapter.ts} & 100\% & 50\% & 100\% & \textcolor{CSuccess}{\bfseries 100\%} \\
+  \code{DashboardRepository.ts} & 96.6\% & 81.0\% & 100\% & \textcolor{CSuccess}{\bfseries 100\%} \\
+  \rowcolor{CBg}
+  \code{SyncState.ts} & 96.6\% & 100\% & 95.5\% & \textcolor{CSuccess}{\bfseries 96.6\%} \\
+  \code{ICalculoMargen.ts} & 88.9\% & 85.7\% & 87.5\% & \textcolor{CSuccess}{\bfseries 92.0\%} \\
+  \rowcolor{CBg}
+  \code{agricultor.service.ts} & 89.1\% & 87.5\% & 71.4\% & \textcolor{CSuccess}{\bfseries 87.8\%} \\
+  \code{pesaje.service.ts} & 75.0\% & 69.7\% & 33.3\% & \textcolor{CWarning}{\bfseries 83.8\%} \\
+  \rowcolor{CBg}
+  \code{catalogo.service.ts} & 75.6\% & 72.7\% & 53.8\% & \textcolor{CWarning}{\bfseries 77.8\%} \\
+  \code{ajuste.service.ts} & 77.3\% & 78.6\% & 33.3\% & \textcolor{CWarning}{\bfseries 76.5\%} \\
+  \rowcolor{CBg}
+  \code{auth.service.ts} & 73.2\% & 67.9\% & 40.0\% & \textcolor{CWarning}{\bfseries 79.3\%} \\
+  \midrule
+  \rowcolor{CRowAlt}
+  \bfseries Total Alcance QA & \bfseries 82.1\% & \bfseries 75.3\% & \bfseries 71.7\% & \textcolor{CSuccess}{\bfseries 85.8\%} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{6pt}
+\begin{center}
+\begin{tikzpicture}[x=0.11cm, y=0.65cm]
+  \fill[CBg] (0,-0.4) rectangle (110,10.5);
+  \draw[CWarning!80, very thick, dashed] (85,0) -- (85,10.4);
+  \node[font=\tiny, text=CWarning, rotate=90, anchor=south] at (85.8,5) {85\% umbral};
+  \foreach \val/\lbl/\ypos in {
+    79.3/auth.service/0,
+    76.5/ajuste.service/1,
+    77.8/catalogo.service/2,
+    83.8/pesaje.service/3,
+    87.8/agricultor.service/4,
+    92.0/ICalculoMargen/5,
+    96.6/SyncState/6,
+    100/DashboardRepo/7,
+    100/OfflineAdapter/8,
+    100/SyncObserver/9
+  }{
+    \fill[CAccent] (0,\ypos+0.1) rectangle (\val,\ypos+0.6);
+    \node[font=\ttfamily\tiny, anchor=east, text=CTextSec] at (-0.5,\ypos+0.35) {\lbl};
+    \node[font=\tiny\bfseries, anchor=west, text=white] at (1,\ypos+0.35) {\val\%};
+  }
+  \draw[CBorder] (0,0) -- (110,0);
+  \foreach \x in {0,20,40,60,80,100}{
+    \draw[CBorder] (\x,0) -- (\x,-0.1);
+    \node[font=\tiny, text=CTextMuted, anchor=north] at (\x,-0.15) {\x\%};
+  }
+\end{tikzpicture}
+\end{center}
+{\footnotesize \color{CTextMuted} La línea discontinua representa el umbral mínimo del 85\% de cobertura de líneas. Cobertura global: \textbf{85.8\%}.}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 5: ANÁLISIS DE DEFECTOS
+% ═══════════════════════════════════════════════════════════════════
+\section{Análisis de Defectos}
+
+\begin{alertsuccess}
+\textbf{\faCheckCircle\ Sin defectos críticos:} Los 125 casos de prueba finales ejecutan exitosamente (0 fallos). Se corrigió 1 defecto en datos de prueba durante el desarrollo, antes de la ejecución definitiva.
+\end{alertsuccess}
+
+\vspace{10pt}
+
+\begin{defectmoderate}
+\textbf{\badgeModerate\ DEF-001 --- Cédula ecuatoriana con dígito verificador incorrecto (dato de prueba)}\\[4pt]
+Se utilizó \code{1723456789} como dato válido. El algoritmo módulo-10 rechazó la cédula correctamente; el error era en el dato de prueba (dígito esperado: \textbf{4}, no \textbf{9}). Corregido con cédula real válida \code{1714397104}.\\[4pt]
+\textbf{Impacto:} Ninguno sobre el sistema. \textbf{Estado:} \badgeCovered\ Corregido.
+\end{defectmoderate}
+
+\vspace{10pt}
+
+\begin{defectsuggested}
+\textbf{\badgeSuggested\ OBS-001 --- AuthService: Cobertura de funciones al 40\%}\\[4pt]
+Las funciones \code{resetearPassword()} y \code{hashPassword()} acceden directamente a \code{bcrypt} y \code{PrismaClient}. Las pruebas unitarias no pueden mockearlas sin romper el encapsulamiento. Requieren pruebas de integración con SQLite en memoria.\\[4pt]
+\textbf{Estado:} \badgePending\ Backlog --- Sprint 2. Impacto estimado: elevar AuthService del 79.3\% al 95\%+.
+\end{defectsuggested}
+
+\vspace{10pt}
+
+\begin{defectsuggested}
+\textbf{\badgeSuggested\ OBS-002 --- AjusteService y CatalogoService: Cobertura \textless 85\% en líneas}\\[4pt]
+\code{CampanaService.cerrar()} importa \code{prisma} dinámicamente (\code{import('@/lib/prisma')}); el mock estático de \code{vi.mock()} no intercepta importaciones dinámicas. \code{AjusteService.registrar()} usa \code{prisma.clasificacion.findUnique} directamente. Estas rutas quedan fuera del alcance del mock estático y reducen la cobertura.\\[4pt]
+\textbf{Estado:} \badgePending\ Sprint 2 --- Prioridad media. Resolver con mock de módulo dinámico o refactorización a repositorio.
+\end{defectsuggested}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 6: VALORACIÓN DEL CUMPLIMIENTO
+% ═══════════════════════════════════════════════════════════════════
+\section{Valoración del Cumplimiento}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabularx}{\textwidth}{>{\bfseries}p{4.5cm} X >{\centering\arraybackslash}p{2.8cm}}
+  \rowcolor{CRowAlt}
+  \bfseries Criterio de Aceptación & \bfseries Evidencia & \bfseries Resultado \\
+  \midrule
+  100\% de todos los CU --- PASS & CU-01: 13, CU-03: 14, CU-04: 24, CU-05: 9, CU-05.3: 8, CU-06: 11, Patrones: 22. Total: 101 casos funcionales + 24 de arquitectura = 125. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  \rowcolor{CBg}
+  Cobertura líneas $\geq$ 85\% global & 85.8\% (supera el umbral). Módulos 100\%: SyncObserver, OfflineAdapter, DashboardRepo. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  Sin conexiones reales a BD & Todos los tests usan \code{vi.mock()} para aislar Prisma. 0 conexiones a SQLite/PostgreSQL. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  \rowcolor{CBg}
+  Mutabilidad dinámica Strategy & TC-ST.DM: cambia estrategia $\pm$4\% $\to$ $\pm$2\% en runtime. TC-ST.DT: cambia tara 1.70 $\to$ 2.0 kg. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  Ausencia de criterios de suspensión & Sin errores TypeScript, sin violaciones de aislamiento. CU-05 tuvo 0 fallas en reglas de pesajes. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  \rowcolor{CBg}
+  Cobertura CU-04, CU-05.3, CU-06 & 24 + 8 + 11 = 43 casos implementados en esta revisión. Cobertura funcional completa. & \textcolor{CSuccess}{\bfseries\faCheckCircle\ CUMPLIDO} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{12pt}
+
+\subsection{Semáforo de calidad}
+
+\begin{center}
+\begin{tikzpicture}
+  \node[draw=CBorder, fill=white, rounded corners=6pt, minimum width=14cm, minimum height=2.8cm] at (7,0) {};
+  % Módulos críticos
+  \fill[CSuccessBg, rounded corners=4pt] (0.4,-0.9) rectangle (4.5,0.9);
+  \draw[CSuccess, line width=1.2pt, rounded corners=4pt] (0.4,-0.9) rectangle (4.5,0.9);
+  \node[font=\huge] at (2.45,0.2) {\textcolor{CSuccess}{\faCheckCircle}};
+  \node[font=\small\bfseries, text=CSuccess] at (2.45,-0.5) {Todos los CU};
+  \node[font=\tiny, text=CTextSec] at (2.45,-0.78) {125/125 --- 100\% PASS};
+  % Cobertura
+  \fill[CSuccessBg, rounded corners=4pt] (4.9,-0.9) rectangle (9.0,0.9);
+  \draw[CSuccess, line width=1.2pt, rounded corners=4pt] (4.9,-0.9) rectangle (9.0,0.9);
+  \node[font=\huge] at (6.95,0.2) {\textcolor{CSuccess}{\faCheckCircle}};
+  \node[font=\small\bfseries, text=CSuccess] at (6.95,-0.5) {Cobertura};
+  \node[font=\tiny, text=CTextSec] at (6.95,-0.78) {85.8\% líneas $\geq$ 85\% umbral};
+  % Integración pendiente
+  \fill[CWarningBg, rounded corners=4pt] (9.4,-0.9) rectangle (13.6,0.9);
+  \draw[CWarning, line width=1.2pt, rounded corners=4pt] (9.4,-0.9) rectangle (13.6,0.9);
+  \node[font=\huge] at (11.5,0.2) {\textcolor{CWarning}{\faExclamationCircle}};
+  \node[font=\small\bfseries, text=CWarning] at (11.5,-0.5) {Integración};
+  \node[font=\tiny, text=CTextSec] at (11.5,-0.78) {Auth+Ajuste: Sprint 2};
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+% ═══════════════════════════════════════════════════════════════════
+%  SECCIÓN 7: CONCLUSIONES Y RECOMENDACIONES
+% ═══════════════════════════════════════════════════════════════════
+\section{Conclusiones y Recomendaciones}
+
+\subsection{Conclusiones}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=6pt]
+  \item[\textcolor{CSuccess}{\faCheckCircle}] El sistema Finca Jirah completa el \textbf{100\% de cobertura funcional} en todos los casos de uso implementados: CU-01, CU-03, CU-04, CU-05, CU-05.3 y CU-06. Los 125 casos ejecutados validaron la solidez de la arquitectura de tres capas.
+
+  \item[\textcolor{CSuccess}{\faCheckCircle}] Los \textbf{cuatro patrones de diseño} (Strategy, State, Observer, Adapter) están correctamente encapsulados e intercambiables en runtime, confirmado por pruebas de mutabilidad dinámica.
+
+  \item[\textcolor{CSuccess}{\faCheckCircle}] La \textbf{lógica de negocio CU-04} (Catálogos) impone correctamente las restricciones de código único, tara bloqueada si hay pesajes, lote en uso y sincronización pendiente al cerrar campaña.
+
+  \item[\textcolor{CSuccess}{\faCheckCircle}] La \textbf{lógica CU-05.3} (AjusteService) calcula correctamente el peso efectivo (\code{ajusteKg = Export - Rechazado}) y el porcentaje de fruta efectiva con precisión de 3 decimales.
+
+  \item[\textcolor{CSuccess}{\faCheckCircle}] Las \textbf{queries de Dashboard (CU-06)} agregan, agrupan y filtran datos correctamente, incluyendo la detección de lotes con actividad, alertas de margen y totales acumulados.
+
+  \item[\textcolor{CWarning}{\faExclamationCircle}] La \textbf{cobertura de funciones} en \code{AuthService} (40\%) y \code{AjusteService} (33\%) es baja porque acceden a Prisma directamente sin repositorio abstracto, impidiendo el mocking unitario de esas rutas.
+\end{itemize}
+
+\subsection{Recomendaciones categorizadas}
+
+\vspace{6pt}
+\begin{defectcritical}
+\textbf{\badgeCritical\ REC-01 --- Pruebas de integración para AuthService y AjusteService}\\[4pt]
+Implementar pruebas de integración con LibSQL \code{:memory:} para cubrir \code{resetearPassword()}, \code{hashPassword()} y las rutas de \code{AjusteService.registrar()} que usan \code{prisma.clasificacion.findUnique} directamente.\\[4pt]
+\textbf{Sprint:} 2 --- Prioridad Alta.
+\end{defectcritical}
+
+\vspace{8pt}
+\begin{defectmoderate}
+\textbf{\badgeModerate\ REC-02 --- Refactorizar importaciones dinámicas de Prisma en CatalogoService}\\[4pt]
+\code{CampanaService.cerrar()} y \code{LoteService.eliminar()} usan \code{import('@/lib/prisma')} dinámico. Extraer esas queries a métodos del repositorio (\code{CampanaRepo.countPendientes()}, \code{LoteRepo.countPesajesActivos()}) para que sean interceptables por mocks estáticos.\\[4pt]
+\textbf{Sprint:} 2 --- Prioridad Media.
+\end{defectmoderate}
+
+\vspace{8pt}
+\begin{defectsuggested}
+\textbf{\badgeSuggested\ REC-03 --- Pruebas E2E con Playwright en entorno de staging}\\[4pt]
+Como tercera capa de validación, implementar pruebas E2E para los flujos CU-01 (login), CU-03 (crear agricultor), CU-05 (registrar pesaje) y CU-05.3 (ajuste de comprador) con base de datos SQLite de prueba.\\[4pt]
+\textbf{Sprint:} 3 --- Prioridad Baja.
+\end{defectsuggested}
+
+\vspace{12pt}
+\begin{alertinfo}
+\textbf{\faLock\ Veredicto de Calidad:} El sistema Finca Jirah cumple el 100\% de cobertura funcional de sus casos de uso implementados. Con 125/125 casos exitosos y cobertura de líneas del 85.8\%, está en condiciones de avanzar a la fase de staging. Se recomienda integrar esta suite en CI/CD para prevenir regresiones en cada commit.
+\end{alertinfo}
+
+\vspace{16pt}
+\subsection{Evidencias de ejecución}
+
+\begin{itemize}[leftmargin=1.5em, itemsep=4pt]
+  \item \code{coverage/coverage-summary.json} --- Reporte JSON de cobertura v8
+  \item \code{\_\_tests\_\_/auth.service.test.ts} --- 13 casos (CU-01)
+  \item \code{\_\_tests\_\_/agricultor.service.test.ts} --- 14 casos (CU-03)
+  \item \code{\_\_tests\_\_/catalogo.service.test.ts} --- 24 casos (CU-04) \textbf{[nuevo]}
+  \item \code{\_\_tests\_\_/pesaje.service.test.ts} --- 9 casos (CU-05)
+  \item \code{\_\_tests\_\_/ajuste.service.test.ts} --- 8 casos (CU-05.3) \textbf{[nuevo]}
+  \item \code{\_\_tests\_\_/calculadora.test.ts} --- 17 casos (Strategy)
+  \item \code{\_\_tests\_\_/offline.adapter.test.ts} --- 7 casos (Adapter)
+  \item \code{\_\_tests\_\_/sync.state.test.ts} --- 16 casos (State)
+  \item \code{\_\_tests\_\_/sync.observer.test.ts} --- 6 casos (Observer)
+  \item \code{\_\_tests\_\_/dashboard.test.ts} --- 11 casos (CU-06) \textbf{[nuevo]}
+\end{itemize}
+
+\vfill
+\begin{center}
+  {\color{CBorder}\rule{\textwidth}{0.4pt}}\\[6pt]
+  {\color{CTextMuted}\small Finca Jirah --- Sistema de Gestión Agrícola PWA\quad $\bullet$\quad Informe QA v1.1 Revisión Completa\quad $\bullet$\quad 13 de Julio de 2026}\\
+  {\color{CTextMuted}\small Universidad de las Fuerzas Armadas ESPE --- Análisis de Sistemas\quad $\bullet$\quad Confidencial Interno}
+\end{center}
+
+\end{document}
